@@ -15,15 +15,29 @@
             </div>
         </div>
         
-        <ul class="list-group" v-if="tarefas.length > 0">
+        <h3 class="font-weight-light">A Fazer ({{ tarefasAFazer.length }})</h3>
+        
+        <ul class="list-group" v-if="tarefasAFazer.length > 0">
             <TarefasListaIten
-                v-for="tarefa in tarefas"
+                v-for="tarefa in tarefasAFazer"
                 :key="tarefa.id"
                 :tarefa="tarefa"
                 @editar="selecionarTarefaParaEdicao" />
         </ul>
 
-        <p v-else>Nenhuma tarefa criada.</p>
+        <p v-else>Nenhuma tarefa a fazer.</p>
+
+        <h3 class="font-weight-light">Concluídas ({{ totalDeTarefasConcluidas }})</h3>
+        
+        <ul class="list-group" v-if="tarefasConcluidas.length > 0">
+            <TarefasListaIten
+                v-for="tarefa in tarefasConcluidas"
+                :key="tarefa.id"
+                :tarefa="tarefa"
+                @editar="selecionarTarefaParaEdicao" />
+        </ul>
+
+        <p v-else>Nenhuma tarefa foi concluída.</p>
 
         <TarefaSalvar
             v-if="exibirFormulario"
@@ -37,6 +51,8 @@
 
 import TarefaSalvar from './TarefaSalvar.vue'
 import TarefasListaIten from './TarefasListaIten.vue'
+import { mapGetters, mapState, mapActions } from 'vuex';
+import { async } from 'q';
 
 export default {
     components: {
@@ -44,17 +60,29 @@ export default {
         TarefasListaIten
     },
     data() {
+        //estado local
         return {
             exibirFormulario: false,
             tarefaSelecionada: undefined,
-            tarefas: [
-                { id: 1, titulo: 'Aprender Vue', concluido: true },
-                { id: 2, titulo: 'Aprender Vue Router', concluido: true },
-                { id: 3, titulo: 'Aprender Vuex', concluido: false }
-            ]
         }
     },
+    computed: {
+        ...mapState(['tarefas']),
+        ...mapGetters([
+            'tarefasConcluidas',
+            'tarefasAFazer',
+            'totalDeTarefasConcluidas'
+        ]),
+    },
+    created() {
+        setTimeout(async () => {
+            await this.listarTarefas()
+            console.log('Actions Executadas!')
+        }, 1000)
+    },
     methods: {
+        ...mapActions(['listarTarefas']),
+
         exibirFormularioCriarTarefa(event) {
             if (this.tarefaSelecionada) {
                 this.tarefaSelecionada = undefined

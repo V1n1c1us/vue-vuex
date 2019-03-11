@@ -12,7 +12,7 @@
 
 <script>
 
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
     data() {
@@ -23,21 +23,22 @@ export default {
     // computed: mapState(['contador']),
     computed: {
         ...mapState({
-            // contador: state => state.contador
-            contador: 'contador',
-            contadorAlias: 'contador',
+            contador: state => state.contadorMod.contador,
+            //contador: 'contador',
+            contadorAlias: state => state.contadorMod.contador,
             contadorMultiplicado(state) {
-                return state.contador * this.contadorLocal
+                return state.contadorMod.contador * this.contadorLocal
             }
-        })
+        }),
+        ...mapGetters(['exibeContador'])
         // outras computed properties
     },
     methods: {
         decrementar() {
-            this.$store.state.contador--
+            this.$store.state.contadorMod.contador--
         },
         incrementar() {
-            this.$store.state.contador++
+            this.$store.state.contadorMod.contador++
         }
     }
 }
