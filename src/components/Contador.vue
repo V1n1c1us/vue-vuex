@@ -22,12 +22,12 @@ export default {
     },
     // computed: mapState(['contador']),
     computed: {
-        ...mapState({
-            contador: state => state.contadorMod.contador,
+        ...mapState('contadorMod', {
+            contador: state => state.contador,
             //contador: 'contador',
-            contadorAlias: state => state.contadorMod.contador,
+            contadorAlias: state => state.contador,
             contadorMultiplicado(state) {
-                return state.contadorMod.contador * this.contadorLocal
+                return state.contador * this.contadorLocal
             }
         }),
         ...mapGetters(['exibeContador'])

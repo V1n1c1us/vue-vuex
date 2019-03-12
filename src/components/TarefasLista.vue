@@ -67,8 +67,8 @@ export default {
         }
     },
     computed: {
-        ...mapState(['tarefas']),
-        ...mapGetters([
+        ...mapState('tarefasMod', ['tarefas']),
+        ...mapGetters('tarefasMod', [
             'tarefasConcluidas',
             'tarefasAFazer',
             'totalDeTarefasConcluidas'
@@ -81,7 +81,12 @@ export default {
         }, 1000)
     },
     methods: {
-        ...mapActions(['listarTarefas']),
+        ...mapActions('tarefasMod', {
+            carregarTarefas: 'listarTarefas',
+            listarTarefas: (dispatch, payload, options) => {
+                return dispatch('listarTarefas', payload, options)
+            }
+        }),
 
         exibirFormularioCriarTarefa(event) {
             if (this.tarefaSelecionada) {
