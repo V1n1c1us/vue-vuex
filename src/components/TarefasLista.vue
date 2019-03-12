@@ -51,8 +51,10 @@
 
 import TarefaSalvar from './TarefaSalvar.vue'
 import TarefasListaIten from './TarefasListaIten.vue'
-import { mapGetters, mapState, mapActions } from 'vuex';
+import { createNamespacedHelpers } from 'vuex';
 import { async } from 'q';
+
+const { mapActions, mapGetters, mapState } = createNamespacedHelpers('tarefasMod')
 
 export default {
     components: {
@@ -67,8 +69,8 @@ export default {
         }
     },
     computed: {
-        ...mapState('tarefasMod', ['tarefas']),
-        ...mapGetters('tarefasMod', [
+        ...mapState(['tarefas']),
+        ...mapGetters([
             'tarefasConcluidas',
             'tarefasAFazer',
             'totalDeTarefasConcluidas'
@@ -81,7 +83,7 @@ export default {
         }, 1000)
     },
     methods: {
-        ...mapActions('tarefasMod', {
+        ...mapActions({
             carregarTarefas: 'listarTarefas',
             listarTarefas: (dispatch, payload, options) => {
                 return dispatch('listarTarefas', payload, options)
