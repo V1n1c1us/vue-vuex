@@ -73,7 +73,8 @@ export default {
         ...mapGetters([
             'tarefasConcluidas',
             'tarefasAFazer',
-            'totalDeTarefasConcluidas'
+            'totalDeTarefasConcluidas',
+            'boasVindas'
         ]),
     },
     created() {
@@ -81,6 +82,7 @@ export default {
             await this.listarTarefas()
             console.log('Actions Executadas!')
         }, 1000)
+        console.log('Boas Vindas', this.boasVindas)
     },
     methods: {
         ...mapActions({
