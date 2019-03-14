@@ -22,7 +22,9 @@
                 v-for="tarefa in tarefasAFazer"
                 :key="tarefa.id"
                 :tarefa="tarefa"
-                @editar="selecionarTarefaParaEdicao" />
+                @editar="selecionarTarefaParaEdicao" 
+                @concluir="concluirTarefa({ tarefa: $event })"
+                @deletar="confirmaraRemocaoTarefa"/>
         </ul>
 
         <p v-else>Nenhuma tarefa a fazer.</p>
@@ -34,15 +36,18 @@
                 v-for="tarefa in tarefasConcluidas"
                 :key="tarefa.id"
                 :tarefa="tarefa"
-                @editar="selecionarTarefaParaEdicao" />
+                @editar="selecionarTarefaParaEdicao" 
+                @concluir="concluirTarefa({ tarefa: $event })"
+                @deletar="confirmaraRemocaoTarefa"/>
         </ul>
 
         <p v-else>Nenhuma tarefa foi concluída.</p>
 
         <TarefaSalvar
             v-if="exibirFormulario"
-            :tarefa="tarefaSelecionada" />
+            @salvar="salvarTarefa" />
 
+        <div class="alert alert-danger" v-if="erro">{{ erro.message }}</div>
 
     </div>
 </template>
@@ -52,9 +57,10 @@
 import TarefaSalvar from './TarefaSalvar.vue'
 import TarefasListaIten from './TarefasListaIten.vue'
 import { createNamespacedHelpers } from 'vuex';
-import { async } from 'q';
 
-const { mapActions, mapGetters, mapState } = createNamespacedHelpers('tarefasMod')
+import register from './../_store/register'
+
+const { mapActions, mapGetters, mapState } = createNamespacedHelpers('tarefas')
 
 export default {
     components: {
@@ -64,12 +70,14 @@ export default {
     data() {
         //estado local
         return {
-            exibirFormulario: false,
-            tarefaSelecionada: undefined,
+            exibirFormulario: false
         }
     },
     computed: {
-        ...mapState(['tarefas']),
+        ...mapState([
+            'tarefaSelecionada',
+            'erro'
+        ]),
         ...mapGetters([
             'tarefasConcluidas',
             'tarefasAFazer',
@@ -78,34 +86,49 @@ export default {
         ]),
     },
     created() {
-        setTimeout(async () => {
-            await this.listarTarefas()
-            console.log('Actions Executadas!')
-        }, 1000)
-        console.log('Boas Vindas', this.boasVindas)
+        register(this.$store)
+        this.listarTarefas()
     },
     methods: {
-        ...mapActions({
-            carregarTarefas: 'listarTarefas',
-            listarTarefas: (dispatch, payload, options) => {
-                return dispatch('listarTarefas', payload, options)
+        ...mapActions([
+            'concluirTarefa',
+            'criarTarefa',
+            'editarTarefa',
+            'deletarTarefa',
+            'listarTarefas',
+            'selecionarTarefa',
+            'resetarTarefaSelecionada'
+        ]),
+        confirmaraRemocaoTarefa(tarefa) {
+            const confirmar = window.confirm(`Deseja Deletar a tarefa com o título "${tarefa.titulo}"?`)
+            if (confirmar) {
+                this.deletarTarefa({ tarefa })
             }
-        }),
-
+        },
         exibirFormularioCriarTarefa(event) {
             if (this.tarefaSelecionada) {
-                this.tarefaSelecionada = undefined
+                this.resetarTarefaSelecionada()
                 return
             }
             this.exibirFormulario = !this.exibirFormulario
         },
+        async salvarTarefa(event) {
+            switch(event.operacao) {
+                case 'criar':
+                    await this.criarTarefa({ tarefa: event.tarefa })
+                    break
+                case 'editar':
+                    await this.editarTarefa({ tarefa: event.tarefa })
+            }
+            this.resetar()
+        },
         selecionarTarefaParaEdicao(tarefa) {
             this.exibirFormulario = true
-            this.tarefaSelecionada = tarefa
+            this.selecionarTarefa({ tarefa })
         },
         resetar() {
             this.exibirFormulario = false
-            this.tarefaSelecionada = undefined
+            this.resetarTarefaSelecionada()
         }
     }
 }

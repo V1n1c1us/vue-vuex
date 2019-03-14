@@ -22,7 +22,7 @@ export default {
     },
     // computed: mapState(['contador']),
     computed: {
-        ...mapState('contadorMod', {
+        ...mapState('contador', {
             contador: state => state.contador,
             //contador: 'contador',
             contadorAlias: state => state.contador,
@@ -35,10 +35,10 @@ export default {
     },
     methods: {
         decrementar() {
-            this.$store.state.contadorMod.contador--
+            this.$store.state.contador.contador--
         },
         incrementar() {
-            this.$store.state.contadorMod.contador++
+            this.$store.state.contador.contador++
         }
     }
 }
